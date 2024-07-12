@@ -3,7 +3,9 @@ from discord.ext import commands
 import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import sqlite3
-from config import AVAILABILITY_DISCORD_TOKEN
+
+from availability_readme import README_CONTENT
+from config import AVAILABILITY_DISCORD_TOKEN, AVAILABILITY_TIME_ROOM_ID
 from tabulate import tabulate
 from datetime import datetime
 from config import AVAILABILITY_USER_STATUS_UPDATE_DELAY
@@ -51,6 +53,24 @@ conn.commit()
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
+    print(AVAILABILITY_TIME_ROOM_ID)
+    channel = bot.get_channel(AVAILABILITY_TIME_ROOM_ID)
+    if channel:
+        print(f"Found channel: {channel.name} (ID: {channel.id})")
+        try:
+            await channel.send(f'{bot.user} has connected to Discord!')
+            await channel.send(f"Use !availability_help to see the bot's instructions")
+            print("Messages sent successfully")
+        except discord.errors.Forbidden:
+            print("Bot doesn't have permission to send messages in this channel")
+        except Exception as e:
+            print(f"An error occurred while sending messages: {e}")
+    else:
+        print(f"Could not find channel with ID {AVAILABILITY_TIME_ROOM_ID}")
+        print("Available channels:")
+        for guild in bot.guilds:
+            for ch in guild.channels:
+                print(f"- {ch.name} (ID: {ch.id})")
     scheduler.start()
 
 
@@ -380,6 +400,16 @@ async def set_user_status(ctx, user: discord.Member, status: str):
     await ctx.send(f'Status for {user.name} set to {status}')
     # If you have a function to update nicknames, call it here
     # await update_nickname(user)
+
+
+@bot.command(name="availability_help", aliases=["avail_help"])
+async def availability_help(ctx):
+    # Split the README content into chunks of 1900 characters or less
+    # Or 1392 to make it look nicer
+    chunks = [README_CONTENT[i:i + 1392] for i in range(0, len(README_CONTENT), 1392)]
+
+    for chunk in chunks:
+        await ctx.send(f"```md\n{chunk}\n```")
 
 
 async def update_user_status():
