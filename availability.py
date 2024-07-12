@@ -6,6 +6,7 @@ import sqlite3
 from config import AVAILABILITY_DISCORD_TOKEN
 from tabulate import tabulate
 from datetime import datetime
+from config import AVAILABILITY_USER_STATUS_UPDATE_DELAY
 
 intents = discord.Intents.default()
 intents.members = True
@@ -420,6 +421,7 @@ def day_sort_key(day):
 
 
 scheduler = AsyncIOScheduler()
-scheduler.add_job(update_user_status, 'interval', seconds=20)
+
+scheduler.add_job(update_user_status, 'interval', seconds=AVAILABILITY_USER_STATUS_UPDATE_DELAY)
 
 bot.run(AVAILABILITY_DISCORD_TOKEN)
