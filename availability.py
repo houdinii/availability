@@ -3,7 +3,7 @@ from discord.ext import commands
 import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import sqlite3
-from config import DISCORD_TOKEN
+from config import AVAILABILITY_DISCORD_TOKEN
 from tabulate import tabulate
 from datetime import datetime
 
@@ -422,4 +422,4 @@ def day_sort_key(day):
 scheduler = AsyncIOScheduler()
 scheduler.add_job(update_user_status, 'interval', seconds=20)
 
-bot.run(DISCORD_TOKEN)
+bot.run(AVAILABILITY_DISCORD_TOKEN)
