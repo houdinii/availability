@@ -179,7 +179,7 @@ async def view_schedule(ctx, user: discord.Member = None):
             await ctx.send(f"{user.name} has no scheduled statuses.")
             return
 
-        schedule_text = f"{user.name}'s schedule (Your time | {user.name}'s time):\n"
+        schedule_text = f"             {user.name}'s schedule\n            Yours      | {user.name}'s:"
 
         # Sort the schedule by day
         schedule.sort(key=lambda x: day_sort_key(x[0]))
@@ -195,7 +195,7 @@ async def view_schedule(ctx, user: discord.Member = None):
             converted_start = start_time.astimezone(requester_tz).strftime("%H:%M")
             converted_end = end_time.astimezone(requester_tz).strftime("%H:%M")
 
-            schedule_text += f"  {converted_start}-{converted_end} | {start}-{end}: {status.upper()}"
+            schedule_text += f" {converted_start}-{converted_end} | {start}-{end}: {status.upper()}"
 
         await ctx.send(f"```{schedule_text}```")
     else:
@@ -217,7 +217,7 @@ async def view_schedule(ctx, user: discord.Member = None):
             user_schedule = cursor.fetchall()
 
             if user_schedule:
-                schedule_text = f"\n\n{user_name}'s schedule (Your time | {user_name}'s time):\n"
+                schedule_text = f"\n             {user_name}'s schedule\n            Your      | {user_name}'s:"
 
                 # Sort the user's schedule by day
                 user_schedule.sort(key=lambda x: day_sort_key(x[0]))
@@ -225,7 +225,7 @@ async def view_schedule(ctx, user: discord.Member = None):
                 current_day = None
                 for day, start, end, status in user_schedule:
                     if day != current_day:
-                        schedule_text += f"\n{day.capitalize()}:"
+                        schedule_text += f"\n{day.capitalize():<9}"
                         current_day = day
 
                     start_time = datetime.strptime(start, "%H:%M").replace(tzinfo=user_tz)
@@ -233,7 +233,7 @@ async def view_schedule(ctx, user: discord.Member = None):
                     converted_start = start_time.astimezone(requester_tz).strftime("%H:%M")
                     converted_end = end_time.astimezone(requester_tz).strftime("%H:%M")
 
-                    schedule_text += f"  {converted_start}-{converted_end} | {start}-{end}: {status.upper()}"
+                    schedule_text += f" {converted_start}-{converted_end} | {start}-{end}: {status.upper()}"
 
                 all_schedules.append(schedule_text)
             else:
